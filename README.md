@@ -1,52 +1,189 @@
-# provenix-examples
+# Provenix Examples
 
-Examples, guides, and validation workflows for [Provenix](https://github.com/open-verix/provenix) — a Policy-Driven Software Supply Chain Orchestrator.
+**Comprehensive examples demonstrating Provenix attestation workflows across different environments**
 
-## Quick Start
+[![Validate Examples](https://github.com/open-verix/provenix-examples/actions/workflows/validate-examples.yml/badge.svg)](https://github.com/open-verix/provenix-examples/actions/workflows/validate-examples.yml)
+[![Go Binary](https://github.com/open-verix/provenix-examples/actions/workflows/go-binary.yml/badge.svg)](https://github.com/open-verix/provenix-examples/actions/workflows/go-binary.yml)
+
+---
+
+## 🎯 Purpose
+
+This repository provides real-world examples of using [Provenix](https://github.com/open-verix/provenix) to generate **atomic evidence** (SBOM + Vulnerability Scan + Signature) for various types of software artifacts.
+
+**What is Atomic Evidence?**
+A cryptographically-signed package containing:
+
+- 📦 **Subject**: The artifact being attested (binary, container, library, etc.)
+- 📋 **SBOM**: Software Bill of Materials (CycloneDX or SPDX)
+- 🔍 **Vulnerability Report**: Security scan results (Grype)
+- ✍️ **Signature**: Cryptographic proof of integrity (Cosign)
+
+All generated **atomically** to prevent TOCTOU (Time-of-Check to Time-of-Use) vulnerabilities.
+
+---
+
+## 📚 Examples
+
+| Example | Artifact Type | Language | Highlights |
+|---------|---------------|----------|-----------|
+| [go-binary](examples/go-binary/) | Binary | Go | Statically-linked, multi-arch builds |
+| docker-image *(coming soon)* | Container | Multi | Multi-stage builds, distroless |
+| nodejs-library *(coming soon)* | Library | Node.js | npm packages, lockfile SBOM |
+| python-package *(coming soon)* | Library | Python | PyPI packages, wheel files |
+| monorepo-app *(coming soon)* | Mixed | Multi | Batch processing, multiple artifacts |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+1. **Install Provenix**
+
+   ```bash
+   # macOS/Linux (recommended)
+   curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+
+   # Verify installation
+   provenix version
+   ```
+
+   Or download manually from [GitHub Releases](https://github.com/open-verix/provenix/releases):
+
+   | Platform | File |
+   |----------|------|
+   | Linux amd64 | `provenix_<version>_linux_amd64.tar.gz` |
+   | Linux arm64 | `provenix_<version>_linux_arm64.tar.gz` |
+   | macOS arm64 | `provenix_<version>_darwin_arm64.tar.gz` |
+   | Windows amd64 | `provenix_<version>_windows_amd64.zip` |
+
+2. **Clone this repository**
+
+   ```bash
+   git clone https://github.com/open-verix/provenix-examples.git
+   cd provenix-examples
+   ```
+
+### Try Your First Example
 
 ```bash
-# Install Provenix (Linux/macOS)
-curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+# Go to the simplest example
+cd examples/go-binary
 
-# Initialize (download vulnerability database)
-provenix init
+# Build the binary
+make build
 
-# Attest a container image (keyless signing in CI)
-provenix attest nginx:latest
+# Generate attestation (local development mode)
+provenix attest build/app \
+  --output attestation.json \
+  --skip-transparency
 
-# Attest with a local key (development)
-provenix attest nginx:latest --key path/to/key.pem --skip-transparency
+# View the attestation
+cat attestation.json | jq .
+
+# Check policy compliance
+provenix policy check attestation.json \
+  --policy policy.yaml
 ```
 
-## Repository Structure
+---
+
+## 🏗️ Repository Structure
 
 ```
 provenix-examples/
-├── docs/
-│   ├── quickstart.md          # 5-minute getting started guide
-│   ├── github-actions.md      # GitHub Actions integration guide
-│   ├── gitlab-ci.md           # GitLab CI integration guide
-│   ├── policies.md            # Policy configuration guide
-│   └── vex-workflows.md       # VEX workflow guide
 ├── examples/
+│   ├── go-binary/             # 🔹 Start here
+│   │   ├── main.go
+│   │   ├── go.mod
+│   │   ├── Makefile
+│   │   ├── provenix.yaml
+│   │   ├── policy.yaml
+│   │   └── README.md
 │   ├── github-actions/        # Reusable GitHub Actions workflows
-│   │   ├── docker-image.yml
-│   │   ├── go-application.yml
-│   │   ├── multi-arch-build.yml
-│   │   └── policy-gate.yml
 │   ├── gitlab-ci/             # GitLab CI pipeline examples
-│   │   ├── docker-image.gitlab-ci.yml
-│   │   ├── go-application.gitlab-ci.yml
-│   │   └── policy-enforcement.gitlab-ci.yml
 │   ├── policies/              # provenix.yaml policy examples
-│   │   ├── provenix.yaml      # Default policy
-│   │   └── provenix-cel.yaml  # CEL custom policy
 │   └── vex/                   # VEX workflow examples
+├── docs/
+│   ├── quickstart.md
+│   ├── github-actions.md
+│   ├── gitlab-ci.md
+│   ├── policies.md
+│   └── vex-workflows.md
 └── .github/workflows/
-    └── validate-examples.yml  # CI: validates examples on each platform
+    ├── validate-examples.yml  # Multi-platform binary validation
+    └── go-binary.yml          # Go binary example CI
 ```
 
-## Platform Support
+---
+
+## 🔄 Common Workflows
+
+### 1. Generate Attestation
+
+```bash
+# Basic attestation (local key)
+provenix attest <artifact> \
+  --output attestation.json \
+  --key cosign.key
+
+# Keyless attestation (GitHub Actions OIDC)
+provenix attest <artifact> \
+  --output attestation.json
+```
+
+### 2. Generate VEX (Vulnerability Exploitability eXchange)
+
+```bash
+provenix vex generate attestation.json \
+  --output vex.json \
+  --status not_affected \
+  --justification "vulnerable_code_not_in_execute_path"
+```
+
+### 3. Policy-Based Compliance
+
+```bash
+provenix policy check attestation.json \
+  --policy examples/policies/provenix.yaml
+```
+
+### 4. Batch Processing
+
+```bash
+provenix batch \
+  --input batch-config.json \
+  --parallel 4 \
+  --output-dir attestations/
+```
+
+---
+
+## 🔐 Keyless Signing with GitHub Actions
+
+All examples include GitHub Actions workflows demonstrating **keyless signing** using OIDC:
+
+```yaml
+permissions:
+  id-token: write # Required for OIDC token
+
+steps:
+  - name: Generate Attestation
+    run: |
+      provenix attest myapp \
+        --output attestation.json
+```
+
+**Benefits:**
+- ✅ No secret key management
+- ✅ Short-lived certificates (automatically rotated)
+- ✅ Transparency log (Rekor) ensures tamper-proofing
+- ✅ Identity binding to CI/CD workflow
+
+---
+
+## 🖥️ Platform Support
 
 | Platform | Architecture | Status |
 |----------|-------------|--------|
@@ -56,16 +193,48 @@ provenix-examples/
 | macOS | amd64 (Intel) | ⚠️ Use Rosetta 2 |
 | Windows | amd64 | ✅ Supported |
 
-## Documentation
+---
 
-- [Quick Start](docs/quickstart.md)
-- [GitHub Actions Guide](docs/github-actions.md)
-- [GitLab CI Guide](docs/gitlab-ci.md)
-- [Policy Configuration](docs/policies.md)
-- [VEX Workflows](docs/vex-workflows.md)
+## 📝 Policy Examples
 
-## Links
+### Default Policy (Permissive)
+
+```yaml
+version: v1
+vulnerabilities:
+  max_critical: 0
+  max_high: 5
+```
+
+### CEL Custom Policy
+
+```yaml
+version: v1
+custom:
+  cel_enabled: true
+  cel_expressions:
+    - name: no-critical
+      expr: "vulnerabilities.filter(v, v.severity == 'Critical').size() == 0"
+```
+
+See [examples/policies/](examples/policies/) for complete examples.
+
+---
+
+## 🔗 Additional Resources
 
 - [Provenix Source](https://github.com/open-verix/provenix)
 - [Releases](https://github.com/open-verix/provenix/releases)
 - [Design Docs](https://github.com/open-verix/provenix/tree/main/docs)
+- [CLI Reference](https://github.com/open-verix/provenix/blob/main/docs/drafts/cli_specification.md)
+- [in-toto Specification](https://github.com/in-toto/attestation)
+- [Sigstore Project](https://www.sigstore.dev/)
+- [SLSA Framework](https://slsa.dev/)
+
+---
+
+## 💬 Support
+
+- **Issues**: [GitHub Issues](https://github.com/open-verix/provenix-examples/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/open-verix/provenix-examples/discussions)
+- **Main Project**: [Provenix Repository](https://github.com/open-verix/provenix)

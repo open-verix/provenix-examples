@@ -1,0 +1,16 @@
+# Provenix Configuration for Go Binary Example
+# Reference: https://github.com/open-verix/provenix/blob/main/docs/drafts/configuration.md
+
+sbom:
+  # SBOM format: cyclonedx-json, spdx-json, or syft-json
+  format: cyclonedx-json
+
+signing:
+  # Use keyless signing with OIDC (GitHub Actions)
+  keyless: true
+  # Publish to Rekor transparency log
+  rekor: true
+
+output:
+  # Output directory for attestations
+  dir: .provenix/attestations

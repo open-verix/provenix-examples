@@ -1,2 +1,10 @@
 .DS_Store
 *.local
+
+# Go build outputs
+examples/go-binary/build/
+examples/*/build/
+
+# Generated attestation files (in examples)
+examples/*/attestation.json
+examples/*/vex.json

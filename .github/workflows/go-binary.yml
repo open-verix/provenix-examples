@@ -1,0 +1,78 @@
+name: Go Binary Example
+
+on:
+  push:
+    paths:
+      - "examples/go-binary/**"
+      - ".github/workflows/go-binary.yml"
+  pull_request:
+    paths:
+      - "examples/go-binary/**"
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Required for OIDC keyless signing
+  contents: read
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: examples/go-binary/go.mod
+
+      - name: Build binary
+        working-directory: examples/go-binary
+        run: make build
+
+      - name: Install Provenix
+        run: |
+          curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+          provenix version
+
+      - name: Initialize Provenix (download vulnerability DB)
+        run: provenix init
+
+      - name: Generate Attestation (Keyless OIDC)
+        working-directory: examples/go-binary
+        run: |
+          provenix attest build/app \
+            --output attestation.json \
+            --config provenix.yaml
+
+      - name: Generate VEX
+        working-directory: examples/go-binary
+        run: |
+          provenix vex generate --output vex.json
+
+      - name: Policy Check
+        working-directory: examples/go-binary
+        run: |
+          provenix policy check --config policy.yaml
+
+      - name: Display Attestation Summary
+        working-directory: examples/go-binary
+        run: |
+          echo "=== Attestation Summary ==="
+          echo "File: attestation.json ($(wc -c < attestation.json) bytes)"
+          cat attestation.json | jq '{
+            subject: .subject[0].name,
+            digest: .subject[0].digest.sha256
+          }' 2>/dev/null || cat attestation.json | head -20
+
+      - name: Upload Attestation Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-binary-attestations
+          path: |
+            examples/go-binary/attestation.json
+            examples/go-binary/vex.json
+            examples/go-binary/build/app
+          retention-days: 30

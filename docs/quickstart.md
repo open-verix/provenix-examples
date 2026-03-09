@@ -14,12 +14,12 @@ curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/ins
 
 Download the latest binary from [GitHub Releases](https://github.com/open-verix/provenix/releases):
 
-| Platform | File |
-|----------|------|
-| Linux amd64 | `provenix_<version>_linux_amd64.tar.gz` |
-| Linux arm64 | `provenix_<version>_linux_arm64.tar.gz` |
-| macOS arm64 | `provenix_<version>_darwin_arm64.tar.gz` |
-| Windows amd64 | `provenix_<version>_windows_amd64.zip` |
+| Platform      | File                                     |
+| ------------- | ---------------------------------------- |
+| Linux amd64   | `provenix_<version>_linux_amd64.tar.gz`  |
+| Linux arm64   | `provenix_<version>_linux_arm64.tar.gz`  |
+| macOS arm64   | `provenix_<version>_darwin_arm64.tar.gz` |
+| Windows amd64 | `provenix_<version>_windows_amd64.zip`   |
 
 ```bash
 # Example: Linux amd64
@@ -78,11 +78,11 @@ provenix report attestation.json --format markdown
 
 ## Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Complete success (signed + published to Rekor) |
-| 1 | Fatal error |
-| 2 | Partial success (saved locally, Rekor unavailable) |
+| Code | Meaning                                            |
+| ---- | -------------------------------------------------- |
+| 0    | Complete success (signed + published to Rekor)     |
+| 1    | Fatal error                                        |
+| 2    | Partial success (saved locally, Rekor unavailable) |
 
 ## Next Steps
 
