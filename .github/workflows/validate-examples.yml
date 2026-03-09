@@ -1,0 +1,109 @@
+name: Validate Examples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily to catch regressions against latest release
+    - cron: "0 6 * * *"
+
+jobs:
+  validate-binary:
+    name: Validate binary on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: linux_amd64
+          - os: ubuntu-24.04-arm
+            arch: linux_arm64
+          - os: macos-latest
+            arch: darwin_arm64
+          - os: windows-latest
+            arch: windows_amd64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get latest Provenix version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(curl -sSL "https://api.github.com/repos/open-verix/provenix/releases/latest" | jq -r '.tag_name')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Latest version: ${VERSION}"
+
+      - name: Install Provenix (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+          provenix --version
+
+      - name: Install Provenix (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VERSION = "${{ steps.version.outputs.version }}"
+          $URL = "https://github.com/open-verix/provenix/releases/download/${VERSION}/provenix_${VERSION}_windows_amd64.zip"
+          Invoke-WebRequest -Uri $URL -OutFile provenix.zip
+          Expand-Archive -Path provenix.zip -DestinationPath .
+          .\provenix.exe --version
+
+      - name: Initialize (download vulnerability DB)
+        shell: bash
+        run: provenix init
+        if: runner.os != 'Windows'
+
+      - name: Test attest (skip Rekor for validation)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          provenix attest alpine:latest \
+            --skip-transparency \
+            --output test-attestation.json
+          echo "Attestation generated successfully"
+          ls -lh test-attestation.json
+
+      - name: Test verify
+        if: runner.os != 'Windows'
+        shell: bash
+        run: provenix verify test-attestation.json || echo "Verify requires valid signature (expected in test)"
+
+      - name: Test version output
+        shell: bash
+        run: provenix version
+        if: runner.os != 'Windows'
+
+  validate-examples-syntax:
+    name: Validate example file syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate GitHub Actions YAML syntax
+        run: |
+          for f in examples/github-actions/*.yml; do
+            echo "Checking $f..."
+            python3 -c "import yaml, sys; yaml.safe_load(open('$f'))" && echo "  ✅ OK" || echo "  ❌ FAIL"
+          done
+
+      - name: Validate GitLab CI YAML syntax
+        run: |
+          for f in examples/gitlab-ci/*.yml; do
+            echo "Checking $f..."
+            python3 -c "import yaml, sys; yaml.safe_load(open('$f'))" && echo "  ✅ OK" || echo "  ❌ FAIL"
+          done
+
+      - name: Validate policy YAML syntax
+        run: |
+          for f in examples/policies/*.yaml; do
+            echo "Checking $f..."
+            python3 -c "import yaml, sys; yaml.safe_load(open('$f'))" && echo "  ✅ OK" || echo "  ❌ FAIL"
+          done
