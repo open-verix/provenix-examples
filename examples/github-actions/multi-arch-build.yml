@@ -34,7 +34,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.22"
 
       - name: Build binary
         run: |
@@ -45,26 +45,19 @@ jobs:
             -o myapp-${{ matrix.os }}-${{ matrix.arch }} \
             ./cmd/myapp
 
+      # install.sh auto-detects platform (linux/darwin, amd64/arm64)
       - name: Install Provenix
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            curl -sSL https://github.com/open-verix/provenix/releases/download/v0.1.0/provenix-linux-amd64 -o provenix
-          else
-            curl -sSL https://github.com/open-verix/provenix/releases/download/v0.1.0/provenix-darwin-arm64 -o provenix
-          fi
-          chmod +x provenix
+          curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+          provenix version
 
       - name: Initialize Provenix
-        run: ./provenix init
+        run: provenix init
 
       - name: Attest binary
         run: |
-          ./provenix attest myapp-${{ matrix.os }}-${{ matrix.arch }} \
-            --format cyclonedx-json \
+          provenix attest myapp-${{ matrix.os }}-${{ matrix.arch }} \
             --output attestation-${{ matrix.os }}-${{ matrix.arch }}.json
-
-      - name: Verify attestation
-        run: ./provenix verify attestation-${{ matrix.os }}-${{ matrix.arch }}.json
 
       - name: Upload to release
         uses: softprops/action-gh-release@v2

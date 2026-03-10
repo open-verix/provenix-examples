@@ -88,6 +88,7 @@ make build
 ```
 
 The binary is built with version information injected via ldflags:
+
 - Version: From git tags
 - Commit: From `git rev-parse`
 - BuildDate: Current UTC timestamp
@@ -119,6 +120,7 @@ make build-multi
 ```
 
 Produces binaries for:
+
 - `build/app-linux-amd64`
 - `build/app-linux-arm64`
 - `build/app-darwin-arm64`

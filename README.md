@@ -4,6 +4,7 @@
 
 [![Validate Examples](https://github.com/open-verix/provenix-examples/actions/workflows/validate-examples.yml/badge.svg)](https://github.com/open-verix/provenix-examples/actions/workflows/validate-examples.yml)
 [![Go Binary](https://github.com/open-verix/provenix-examples/actions/workflows/go-binary.yml/badge.svg)](https://github.com/open-verix/provenix-examples/actions/workflows/go-binary.yml)
+[![Validate Templates](https://github.com/open-verix/provenix-examples/actions/workflows/validate-templates.yml/badge.svg)](https://github.com/open-verix/provenix-examples/actions/workflows/validate-templates.yml)
 
 ---
 
@@ -25,17 +26,29 @@ All generated **atomically** to prevent TOCTOU (Time-of-Check to Time-of-Use) vu
 
 ## 📚 Examples
 
-| Example | Artifact Type | Language | Highlights |
-|---------|---------------|----------|-----------|
-| [go-binary](examples/go-binary/) | Binary | Go | Statically-linked, multi-arch builds |
-| docker-image *(coming soon)* | Container | Multi | Multi-stage builds, distroless |
-| nodejs-library *(coming soon)* | Library | Node.js | npm packages, lockfile SBOM |
-| python-package *(coming soon)* | Library | Python | PyPI packages, wheel files |
-| monorepo-app *(coming soon)* | Mixed | Multi | Batch processing, multiple artifacts |
+| Example                          | Artifact Type | Language | Highlights                           |
+| -------------------------------- | ------------- | -------- | ------------------------------------ |
+| [go-binary](examples/go-binary/) | Binary        | Go       | Statically-linked, multi-arch builds |
+| docker-image _(coming soon)_     | Container     | Multi    | Multi-stage builds, distroless       |
+| nodejs-library _(coming soon)_   | Library       | Node.js  | npm packages, lockfile SBOM          |
+| python-package _(coming soon)_   | Library       | Python   | PyPI packages, wheel files           |
+| monorepo-app _(coming soon)_     | Mixed         | Multi    | Batch processing, multiple artifacts |
 
 ---
 
-## 🚀 Quick Start
+## � Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](docs/quickstart.md) | Install Provenix and generate your first attestation |
+| [GitHub Actions](docs/github-actions.md) | Integrate Provenix into GitHub Actions workflows |
+| GitLab CI *(coming soon)* | Integrate with GitLab CI/CD pipelines |
+| Policies *(coming soon)* | Write and apply security policies |
+| VEX Workflows *(coming soon)* | Triage and suppress false-positive vulnerabilities |
+
+---
+
+## �🚀 Quick Start
 
 ### Prerequisites
 
@@ -51,12 +64,12 @@ All generated **atomically** to prevent TOCTOU (Time-of-Check to Time-of-Use) vu
 
    Or download manually from [GitHub Releases](https://github.com/open-verix/provenix/releases):
 
-   | Platform | File |
-   |----------|------|
-   | Linux amd64 | `provenix_<version>_linux_amd64.tar.gz` |
-   | Linux arm64 | `provenix_<version>_linux_arm64.tar.gz` |
-   | macOS arm64 | `provenix_<version>_darwin_arm64.tar.gz` |
-   | Windows amd64 | `provenix_<version>_windows_amd64.zip` |
+   | Platform      | File                                     |
+   | ------------- | ---------------------------------------- |
+   | Linux amd64   | `provenix_<version>_linux_amd64.tar.gz`  |
+   | Linux arm64   | `provenix_<version>_linux_arm64.tar.gz`  |
+   | macOS arm64   | `provenix_<version>_darwin_arm64.tar.gz` |
+   | Windows amd64 | `provenix_<version>_windows_amd64.zip`   |
 
 2. **Clone this repository**
 
@@ -176,6 +189,7 @@ steps:
 ```
 
 **Benefits:**
+
 - ✅ No secret key management
 - ✅ Short-lived certificates (automatically rotated)
 - ✅ Transparency log (Rekor) ensures tamper-proofing
@@ -185,13 +199,13 @@ steps:
 
 ## 🖥️ Platform Support
 
-| Platform | Architecture | Status |
-|----------|-------------|--------|
-| Linux | amd64 | ✅ Supported |
-| Linux | arm64 | ✅ Supported |
-| macOS | arm64 (Apple Silicon) | ✅ Supported |
-| macOS | amd64 (Intel) | ⚠️ Use Rosetta 2 |
-| Windows | amd64 | ✅ Supported |
+| Platform | Architecture          | Status           |
+| -------- | --------------------- | ---------------- |
+| Linux    | amd64                 | ✅ Supported     |
+| Linux    | arm64                 | ✅ Supported     |
+| macOS    | arm64 (Apple Silicon) | ✅ Supported     |
+| macOS    | amd64 (Intel)         | ⚠️ Use Rosetta 2 |
+| Windows  | amd64                 | ✅ Supported     |
 
 ---
 

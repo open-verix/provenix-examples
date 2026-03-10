@@ -1,6 +1,10 @@
 # Example: Attest Go Application
 #
 # This workflow builds a Go application and attests it with Provenix.
+# Copy this template into your repository's .github/workflows/ and adapt as needed.
+#
+# Required repository permissions: Settings → Actions → Workflow permissions
+#   → Allow GitHub Actions to create and approve pull requests (for id-token: write)
 
 name: Attest Go Application
 
@@ -14,8 +18,8 @@ jobs:
   build-and-attest:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # Required for keyless signing
-      contents: write # Required for release uploads
+      id-token: write  # Required for keyless signing (OIDC)
+      contents: write  # Required for release uploads
 
     steps:
       - name: Checkout code
@@ -34,34 +38,25 @@ jobs:
 
       - name: Install Provenix
         run: |
-          curl -sSL https://github.com/open-verix/provenix/releases/download/v0.1.0/provenix-linux-amd64 -o provenix
-          chmod +x provenix
+          curl -sSL https://raw.githubusercontent.com/open-verix/provenix/main/scripts/install.sh | sh
+          provenix version
 
       - name: Initialize Grype database
-        run: ./provenix init
+        run: provenix init
 
       - name: Attest binary with Provenix
         run: |
-          ./provenix attest myapp \
-            --format cyclonedx-json \
+          provenix attest myapp \
             --output attestation.json
 
-      - name: Verify attestation
-        run: ./provenix verify attestation.json
-
-      - name: Generate dependency report
-        run: |
-          ./provenix report attestation.json \
-            --format markdown \
-            --output DEPENDENCIES.md
+      - name: Policy check
+        run: provenix policy check --config provenix.yaml
 
       - name: Upload attestation artifact
         uses: actions/upload-artifact@v4
         with:
           name: attestation
-          path: |
-            attestation.json
-            DEPENDENCIES.md
+          path: attestation.json
 
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/')
@@ -70,4 +65,3 @@ jobs:
           files: |
             myapp
             attestation.json
-            DEPENDENCIES.md
