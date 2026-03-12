@@ -55,7 +55,7 @@ jobs:
       - name: Policy Check
         working-directory: examples/go-binary
         run: |
-          provenix policy check --config policy.yaml
+          provenix policy check
 
       - name: Display Attestation Summary
         working-directory: examples/go-binary

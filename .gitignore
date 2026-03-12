@@ -8,3 +8,11 @@ examples/*/build/
 # Generated attestation files (in examples)
 examples/*/attestation.json
 examples/*/vex.json
+
+# Generated provenix output directories
+examples/*/.provenix/
+
+# Cosign key files (never commit private keys)
+cosign.key
+examples/*/cosign.key
+*.key

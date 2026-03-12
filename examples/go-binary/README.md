@@ -35,6 +35,10 @@ provenix version
 ### Local Development
 
 ```bash
+
+# Change directory
+cd ~/provenix-examples/examples/go-binary
+
 # Build the binary
 make build
 
@@ -50,6 +54,11 @@ make version
 ```bash
 # Build the binary
 make build
+
+# Generate a key pair for local signing (one-time setup)
+# Creates cosign.key (private) and cosign.pub (public) in the current directory
+# Note: cosign.key is a private key — do not commit it to version control
+provenix init --generate-key --key-output cosign
 
 # Generate attestation (skip Rekor for local testing)
 provenix attest build/app \

@@ -1,27 +1,6 @@
-# Provenix Policy for Go Binary Example
-# Reference: https://github.com/open-verix/provenix/blob/main/docs/drafts/configuration.md
-
-version: v1
-
-vulnerabilities:
-  # No critical vulnerabilities allowed
-  max_critical: 0
-  # Allow up to 5 high severity (warn)
-  max_high: 5
-  # Only report fixed vulnerabilities
-  only_fixed: false
-
-sbom:
-  # Require a checksum in the SBOM
-  require_checksum: true
-  # Minimum number of packages expected
-  min_packages: 0
-
-# CEL custom rules (optional)
-custom:
-  cel_enabled: true
-  cel_expressions:
-    - name: no-critical-vulns
-      expr: "vulnerabilities.filter(v, v.severity == 'Critical').size() == 0"
-    - name: warn-on-high
-      expr: "vulnerabilities.filter(v, v.severity == 'High').size() < 10"
+# DEPRECATED: policy.yaml is no longer used.
+#
+# Policy configuration is now in provenix.yaml under the `policy:` key.
+# This file is kept only for reference — it will be ignored by Provenix.
+#
+# See: examples/go-binary/provenix.yaml

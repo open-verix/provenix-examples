@@ -18,8 +18,8 @@ jobs:
   build-and-attest:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for keyless signing (OIDC)
-      contents: write  # Required for release uploads
+      id-token: write # Required for keyless signing (OIDC)
+      contents: write # Required for release uploads
 
     steps:
       - name: Checkout code

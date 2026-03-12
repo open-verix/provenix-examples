@@ -53,8 +53,8 @@ Keyless signing uses GitHub OIDC. Always declare these permissions at the job le
 jobs:
   build-and-attest:
     permissions:
-      id-token: write  # Required for keyless signing (OIDC)
-      contents: write  # Required if uploading to releases
+      id-token: write # Required for keyless signing (OIDC)
+      contents: write # Required if uploading to releases
 ```
 
 For **organization repositories**, also enable in:
@@ -146,6 +146,7 @@ policy:
 ```
 
 > **Exit code semantics:**
+>
 > - `0` — policy passed
 > - `1` — policy violation (build should fail)
 > - `2` — attestation saved locally, Rekor unavailable (partial success)
@@ -167,7 +168,7 @@ jobs:
         arch: [amd64, arm64]
         exclude:
           - os: ubuntu-latest
-            arch: arm64  # Cross-compile instead
+            arch: arm64 # Cross-compile instead
 
     runs-on: ${{ matrix.os }}
     permissions:
@@ -212,10 +213,10 @@ Attest a Docker image by its digest (prevents TOCTOU attacks).
 
 ## Exit Codes
 
-| Code | Meaning | CI Behavior |
-|------|---------|-------------|
-| `0`  | Complete success (signed + published to Rekor) | Pass |
-| `1`  | Fatal error (crypto failure, artifact not found) | Fail |
+| Code | Meaning                                            | CI Behavior  |
+| ---- | -------------------------------------------------- | ------------ |
+| `0`  | Complete success (signed + published to Rekor)     | Pass         |
+| `1`  | Fatal error (crypto failure, artifact not found)   | Fail         |
 | `2`  | Partial success (saved locally, Rekor unavailable) | Configurable |
 
 To allow exit code `2` (e.g., air-gapped or Rekor outage):

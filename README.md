@@ -38,13 +38,13 @@ All generated **atomically** to prevent TOCTOU (Time-of-Check to Time-of-Use) vu
 
 ## � Documentation
 
-| Guide | Description |
-|-------|-------------|
-| [Quick Start](docs/quickstart.md) | Install Provenix and generate your first attestation |
-| [GitHub Actions](docs/github-actions.md) | Integrate Provenix into GitHub Actions workflows |
-| GitLab CI *(coming soon)* | Integrate with GitLab CI/CD pipelines |
-| Policies *(coming soon)* | Write and apply security policies |
-| VEX Workflows *(coming soon)* | Triage and suppress false-positive vulnerabilities |
+| Guide                                    | Description                                          |
+| ---------------------------------------- | ---------------------------------------------------- |
+| [Quick Start](docs/quickstart.md)        | Install Provenix and generate your first attestation |
+| [GitHub Actions](docs/github-actions.md) | Integrate Provenix into GitHub Actions workflows     |
+| GitLab CI _(coming soon)_                | Integrate with GitLab CI/CD pipelines                |
+| Policies _(coming soon)_                 | Write and apply security policies                    |
+| VEX Workflows _(coming soon)_            | Triage and suppress false-positive vulnerabilities   |
 
 ---
 

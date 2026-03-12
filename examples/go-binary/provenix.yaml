@@ -1,16 +1,63 @@
-# Provenix Configuration for Go Binary Example
-# Reference: https://github.com/open-verix/provenix/blob/main/docs/drafts/configuration.md
+# provenix.yaml — Tool config + Policy in one file
+#
+# Commit this file to your repository.
+# Generated artifacts (.provenix/, attestation.json, vex.json) should be in .gitignore.
+#
+# Reference: https://github.com/open-verix/provenix
+version: v1
 
+# ==============================================================================
+# Tool Configuration
+# ==============================================================================
 sbom:
-  # SBOM format: cyclonedx-json, spdx-json, or syft-json
+  # Options: cyclonedx-json, spdx-json, syft-json
   format: cyclonedx-json
+  include-files: false
+
+scan:
+  min-severity: medium
+  fail-on: critical
+  show-fixed: true
 
 signing:
-  # Use keyless signing with OIDC (GitHub Actions)
-  keyless: true
-  # Publish to Rekor transparency log
-  rekor: true
+  # Use keyless signing with OIDC (GitHub Actions, GitLab CI)
+  mode: keyless
+  oidc:
+    fulcio-url: https://fulcio.sigstore.dev
 
-output:
-  # Output directory for attestations
+rekor:
+  url: https://rekor.sigstore.dev
+
+storage:
+  # Attestations saved here when Rekor is unavailable (exit code 2)
   dir: .provenix/attestations
+
+# ==============================================================================
+# Policy
+# ==============================================================================
+policy:
+  vulnerabilities:
+    # No critical vulnerabilities allowed
+    max_critical: 0
+    # Allow up to 5 high severity
+    max_high: 5
+    # Only count unfixed vulnerabilities
+    only_fixed: false
+
+  sbom:
+    require_checksum: true
+    min_packages: 0
+
+  # Custom CEL expressions (optional)
+  custom:
+    cel_enabled: true
+    cel_expressions:
+      - name: no-critical-vulns
+        expr: "vulnerabilities.filter(v, v.severity == 'Critical').size() == 0"
+      - name: warn-on-high
+        expr: "vulnerabilities.filter(v, v.severity == 'High').size() < 10"
+
+  # License policy (Phase 6 — not yet active)
+  # licenses:
+  #   allowed: [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC]
+  #   denied: [GPL-3.0, AGPL-3.0]
