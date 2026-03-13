@@ -19,15 +19,16 @@ build:
 	CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) .
 	@echo "Binary built at $(BUILD_DIR)/$(BINARY_NAME)"
 
-## build-multi: Build for all supported platforms
+## build-multi: Build for all supported platforms (requires Unix shell: macOS/Linux/WSL/Git Bash)
 build-multi:
 	@echo "Building for multiple architectures..."
 	@mkdir -p $(BUILD_DIR)
-	GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64 .
-	GOOS=linux  GOARCH=arm64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-arm64 .
-	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-darwin-arm64 .
+	GOOS=linux   GOARCH=amd64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64 .
+	GOOS=linux   GOARCH=arm64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-arm64 .
+	GOOS=darwin  GOARCH=arm64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-darwin-arm64 .
+	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-windows-amd64.exe .
 	@echo "Multi-arch builds complete:"
-	@ls -lh $(BUILD_DIR)/
+	@ls -lh $(BUILD_DIR)/ 2>/dev/null || dir $(BUILD_DIR)
 
 ## test-provenix: Run the full Provenix attestation workflow locally
 test-provenix: build

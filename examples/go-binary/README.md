@@ -35,7 +35,6 @@ provenix version
 ### Local Development
 
 ```bash
-
 # Change directory
 cd ~/provenix-examples/examples/go-binary
 
@@ -55,12 +54,15 @@ make version
 # Build the binary
 make build
 
-# Generate a key pair for local signing (one-time setup)
-# Creates cosign.key (private) and cosign.pub (public) in the current directory
+# Step 1: Initialize Grype vulnerability database (one-time, ~200MB download)
+provenix init
+
+# Step 2 (optional): Generate a key pair for local signing
+# Creates cosign.key (private) and cosign.pub (public)
 # Note: cosign.key is a private key — do not commit it to version control
 provenix init --generate-key --key-output cosign
 
-# Generate attestation (skip Rekor for local testing)
+# Step 3: Generate attestation (skip Rekor for local testing)
 provenix attest build/app \
   --key cosign.key \
   --output attestation.json \
@@ -82,8 +84,8 @@ go-binary/
 ├── main.go          # Simple CLI application
 ├── go.mod           # Go module definition
 ├── Makefile         # Build automation
-├── provenix.yaml    # Provenix configuration
-├── policy.yaml      # Security policy (CEL)
+├── provenix.yaml    # Provenix configuration (tool config + policy: section)
+├── policy.yaml      # Deprecated — policy is now in provenix.yaml
 └── README.md        # This file
 ```
 
@@ -105,9 +107,10 @@ The binary is built with version information injected via ldflags:
 ### Step 2: Generate Attestation
 
 ```bash
+# Reads provenix.yaml automatically; use --key for local (non-CI) signing
 provenix attest build/app \
   --output attestation.json \
-  --config provenix.yaml
+  --skip-transparency
 ```
 
 ### Step 3: Generate VEX (optional)
@@ -124,6 +127,9 @@ provenix policy check
 
 ## Multi-Architecture Builds
 
+> **Note:** `make build-multi` uses inline environment variable syntax (`GOOS=linux go build`)  
+> which requires a Unix-compatible shell. Use **WSL** or **Git Bash** on Windows.
+
 ```bash
 make build-multi
 ```
@@ -133,6 +139,7 @@ Produces binaries for:
 - `build/app-linux-amd64`
 - `build/app-linux-arm64`
 - `build/app-darwin-arm64`
+- `build/app-windows-amd64.exe`
 
 ## CI/CD Integration
 
