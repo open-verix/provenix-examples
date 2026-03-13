@@ -3,19 +3,19 @@ name: Validate Templates
 on:
   push:
     paths:
-      - "examples/github-actions/**"
-      - "docs/github-actions.md"
+      - "examples/**"
+      - "docs/**"
       - ".github/workflows/validate-templates.yml"
   pull_request:
     paths:
-      - "examples/github-actions/**"
-      - "docs/github-actions.md"
+      - "examples/**"
+      - "docs/**"
   workflow_dispatch:
 
 jobs:
   validate-yaml-syntax:
     name: Validate YAML Syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +38,7 @@ jobs:
 
   validate-no-old-urls:
     name: Validate No Hardcoded Binary URLs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -71,7 +71,7 @@ jobs:
 
   validate-no-invalid-commands:
     name: Validate Provenix Commands
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -80,16 +80,17 @@ jobs:
           echo "=== Checking for invalid Provenix commands ==="
           FAILED=0
 
-          # Commands that no longer exist or were renamed
+          # Commands that no longer exist, were renamed, or are deprecated
           INVALID_PATTERNS=(
             "provenix verify"
             "provenix report"
             "provenix vex create"
             "./provenix "
+            "--config policy.yaml"   # policy is now in provenix.yaml
           )
 
           for pattern in "${INVALID_PATTERNS[@]}"; do
-            if grep -rn "$pattern" examples/github-actions/ docs/; then
+            if grep -rn "$pattern" examples/ docs/; then
               echo "❌ Found invalid pattern: '$pattern'"
               FAILED=1
             fi
@@ -100,7 +101,7 @@ jobs:
 
   validate-docs-links:
     name: Validate Documentation Links
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 

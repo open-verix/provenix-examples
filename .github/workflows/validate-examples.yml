@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             arch: linux_amd64
           - os: ubuntu-24.04-arm
             arch: linux_arm64
@@ -82,7 +82,7 @@ jobs:
 
   validate-examples-syntax:
     name: Validate example file syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
