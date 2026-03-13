@@ -119,7 +119,7 @@ provenix vex generate --output vex.json
 ### Step 4: Policy Check
 
 ```bash
-provenix policy check --config policy.yaml
+provenix policy check
 ```
 
 ## Multi-Architecture Builds

@@ -150,30 +150,39 @@ storage:
   retention-days: 30
 
 # ==============================================================================
-# Policy Configuration (Post-MVP)
+# Policy
 # ==============================================================================
-# policy:
-#   # Strict mode: fail on any policy violation
-#   # Default: false
-#   strict: false
-#
-#   # Vulnerability thresholds
-#   vulnerabilities:
-#     critical: 0  # Fail if any critical vulnerabilities found
-#     high: 5      # Fail if more than 5 high vulnerabilities found
-#
-#   # License policy (requires license scanning, post-MVP)
-#   # licenses:
-#   #   allow:
-#   #     - MIT
-#   #     - Apache-2.0
-#   #   deny:
-#   #     - GPL-3.0
-#
-#   # SLSA level enforcement (post-MVP)
-#   # slsa:
-#   #   level: 3
-#   #   require-hermetic: true
+policy:
+  # Vulnerability thresholds
+  # Fail if the evidence contains vulnerabilities exceeding these counts.
+  vulnerabilities:
+    max_critical: 0     # Zero critical vulnerabilities allowed
+    max_high: 5         # Up to 5 high allowed (warn)
+    max_medium: 20      # Up to 20 medium allowed
+    only_fixed: false   # Report all vulnerabilities, not just fixable ones
+    # ignore_ids:
+    #   - CVE-2023-12345 # Known false-positive
+
+  # SBOM requirements
+  sbom:
+    require_checksum: true
+    # required_format: cyclonedx-json
+    # min_packages: 1
+
+  # License policy (Phase 6 — not yet evaluated by the engine)
+  # licenses:
+  #   allowed: [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC]
+  #   denied: [GPL-3.0, AGPL-3.0]
+  #   warn_on_unknown: true
+
+  # Custom CEL expressions (requires cel_enabled: true)
+  custom:
+    cel_enabled: false
+    # cel_expressions:
+    #   - name: no-critical-vulns
+    #     expr: "vulnerabilities.filter(v, v.severity == 'Critical').size() == 0"
+    #   - name: warn-on-high
+    #     expr: "vulnerabilities.filter(v, v.severity == 'High').size() < 10"
 
 # ==============================================================================
 # Logging Configuration

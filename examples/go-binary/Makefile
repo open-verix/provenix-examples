@@ -37,7 +37,7 @@ test-provenix: build
 	@echo "Step 2: Generate VEX"
 	provenix vex generate --output vex.json
 	@echo "Step 3: Policy check"
-	provenix policy check --config policy.yaml
+	provenix policy check
 	@echo "Provenix workflow test complete!"
 
 ## clean: Remove build artifacts
